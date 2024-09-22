@@ -1,9 +1,15 @@
 const express = require("express");
 const { db } = require("./firebaseConfig"); // Firebase config
+const cors = require('cors');
 const app = express();
 const port = 5000;
 
 app.use(express.json());
+
+app.use(cors({
+  origin: 'http://localhost:3000', // Allow only this origin
+}));
+
 
 // Helper functions from your original code
 const { GetBestChoice, generateTerms } = require("./searchAlgorithm");
