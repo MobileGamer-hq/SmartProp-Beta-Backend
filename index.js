@@ -6,8 +6,18 @@ const port = 5000;
 
 app.use(express.json());
 
+// List of allowed domains
+const allowedOrigins = ['http://localhost:3000', 'https://smartprop-beta.web.app'];
+
 app.use(cors({
-  origin: 'http://localhost:3000', // Allow only this origin
+  origin: function (origin, callback) {
+    // If the request is from an allowed origin, allow it
+    if (allowedOrigins.indexOf(origin) !== -1 || !origin) {
+      callback(null, true);
+    } else {
+      callback(new Error('Not allowed by CORS'));
+    }
+  }
 }));
 
 
