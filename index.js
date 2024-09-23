@@ -1,6 +1,7 @@
 const express = require("express");
 const { db } = require("./firebaseConfig"); // Firebase config
 const cors = require('cors');
+const { Parser } = require('json2csv');
 const app = express();
 const port = 5000;
 
@@ -96,7 +97,40 @@ app.get("/Users", async (req, res) => {
   }
 });
 
-app.post("/usersByIds", async (req, res) => {
+
+// Sample route to get all users and convert to CSV
+app.get('/Users/csv', async (req, res) => {
+  try {
+    // Fetch the users from the database
+    const usersSnapshot = await db.collection('Users').get();
+    const users = [];
+    
+    usersSnapshot.forEach(doc => {
+      users.push({ id: doc.id, ...doc.data() });
+    });
+
+    // If no users are found, return an empty file
+    if (users.length === 0) {
+      return res.status(200).send('No users found');
+    }
+
+    // Fields for the CSV
+    const fields = ['id', 'name', 'login.email', 'role', 'roleData']; // Adjust fields based on your user schema
+    const json2csvParser = new Parser({ fields });
+    const csv = json2csvParser.parse(users);
+
+    // Set headers to indicate that it's a file download
+    res.header('Content-Type', 'text/csv');
+    res.attachment('users.csv');
+    res.status(200).send(csv);
+
+  } catch (error) {
+    console.error('Error converting users to CSV:', error);
+    res.status(500).json({ error: 'Failed to convert users to CSV' });
+  }
+});
+
+app.post("/UsersByIds", async (req, res) => {
   try {
     const userIds = req.body.userIds; // Array of user IDs passed from frontend
 
@@ -146,7 +180,7 @@ app.get("/Users/:id", async (req, res) => {
 });
 
 // Endpoint to get properties from Firebase and return the best matches
-app.get("/properties", async (req, res) => {
+app.get("/Properties", async (req, res) => {
   try {
     // Fetch property data from Firebase
     const propertySnapshot = await db.collection("Properties").get();
@@ -162,7 +196,7 @@ app.get("/properties", async (req, res) => {
   }
 });
 
-app.post("/propertiesByIds", async (req, res) => {
+app.post("/PropertiesByIds", async (req, res) => {
   try {
     const propertyIds = req.body.propertyIds; // Array of property IDs passed from frontend
 
@@ -186,7 +220,7 @@ app.post("/propertiesByIds", async (req, res) => {
   }
 });
 
-app.get("/properties/:id", async (req, res) => {
+app.get("/Properties/:id", async (req, res) => {
   try {
     // Get the property ID from the request parameters
     const propertyId = req.params.id;
@@ -212,7 +246,7 @@ app.get("/properties/:id", async (req, res) => {
 });
 
 // Endpoint to process search terms and filter properties
-app.post("/search", async (req, res) => {
+app.post("/Search", async (req, res) => {
   try {
     const searchTerm = req.body.searchTerm.toLowerCase(); // Get search term from request body
 
