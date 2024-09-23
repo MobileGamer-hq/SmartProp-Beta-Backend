@@ -179,6 +179,23 @@ app.get("/Users/:id", async (req, res) => {
   }
 });
 
+
+// Route to update a specific key of a user
+app.patch('/Users/:id', async (req, res) => {
+  const userId = req.params.id;  // Get the user ID from the URL
+  const updateData = req.body;   // Get the key-value pair to update from the request body
+
+  try {
+    // Update the specific fields provided in the request body for the user
+    await db.collection('Users').doc(userId).update(updateData);
+
+    res.status(200).json({ message: 'User updated successfully' });
+  } catch (error) {
+    console.error('Error updating user: ', error);
+    res.status(500).json({ error: 'Failed to update user' });
+  }
+});
+
 // Endpoint to get properties from Firebase and return the best matches
 app.get("/Properties", async (req, res) => {
   try {
