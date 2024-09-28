@@ -172,7 +172,7 @@ app.get("/Users/:id", async (req, res) => {
     console.log(userData);
 
     // Return the user data
-    res.status(200).json({ user: userData });
+    res.status(200).json({ data: userData });
   } catch (error) {
     console.error("Error fetching user: ", error);
     res.status(500).json({ error: "Failed to fetch user" });
@@ -270,7 +270,7 @@ app.get("/Properties/:id", async (req, res) => {
     console.log(propertyData);
 
     // Return the property data
-    res.status(200).json({ property: propertyData });
+    res.status(200).json({ data: propertyData });
   } catch (error) {
     console.error("Error fetching property: ", error);
     res.status(500).json({ error: "Failed to fetch property" });
