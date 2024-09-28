@@ -258,7 +258,7 @@ app.get("/Properties/:id", async (req, res) => {
     const propertyId = req.params.id;
 
     // Fetch the property document from Firebase using the provided ID
-    const propertyDoc = await db.collection("properties").doc(propertyId).get();
+    const propertyDoc = await db.collection("Properties").doc(propertyId).get();
 
     // Check if the property exists
     if (!propertyDoc.exists) {
