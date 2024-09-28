@@ -196,6 +196,21 @@ app.patch('/Users/:id', async (req, res) => {
   }
 });
 
+// Route to delete a user
+app.delete('/Users/:id', async (req, res) => {
+  const userId = req.params.id; // Get the user ID from the URL
+
+  try {
+    // Delete the user document with the specified ID
+    await db.collection('Users').doc(userId).delete();
+
+    res.status(200).json({ message: 'User deleted successfully' });
+  } catch (error) {
+    console.error('Error deleting user: ', error);
+    res.status(500).json({ error: 'Failed to delete user' });
+  }
+});
+
 // Endpoint to get properties from Firebase and return the best matches
 app.get("/Properties", async (req, res) => {
   try {
@@ -261,6 +276,78 @@ app.get("/Properties/:id", async (req, res) => {
     res.status(500).json({ error: "Failed to fetch property" });
   }
 });
+
+// Route to update a specific key of a property
+app.patch('/Properties/:id', async (req, res) => {
+  const propertyId = req.params.id;  // Get the property ID from the URL
+  const updateData = req.body;   // Get the key-value pair to update from the request body
+
+  try {
+    // Update the specific fields provided in the request body for the property
+    await db.collection('Properties').doc(propertyId).update(updateData);
+
+    res.status(200).json({ message: 'Property updated successfully' });
+  } catch (error) {
+    console.error('Error updating property: ', error);
+    res.status(500).json({ error: 'Failed to update property' });
+  }
+});
+
+// Route to delete a property
+app.delete('/Properties/:id', async (req, res) => {
+  const propertyId = req.params.id; // Get the property ID from the URL
+
+  try {
+    // Delete the property document with the specified ID
+    await db.collection('Properties').doc(propertyId).delete();
+
+    res.status(200).json({ message: 'Property deleted successfully' });
+  } catch (error) {
+    console.error('Error deleting property: ', error);
+    res.status(500).json({ error: 'Failed to delete property' });
+  }
+});
+
+// Route to add a new property document and return the document ID
+app.post('/Properties/:id', async (req, res) => {
+  const propertyId = req.params.id; // The custom property ID provided in the URL
+  const data = req.body; // Document metadata
+
+  try {
+    // Add a new document to the Properties collection with the given custom ID
+    const docRef = await db.collection('Properties').doc(propertyId).set(data);
+
+    // Respond with the provided document ID
+    res.status(201).json({ id: propertyId });
+  } catch (error) {
+    console.error('Error saving document:', error);
+    res.status(500).json({ error: 'Failed to save document.' });
+  }
+});
+
+
+
+// Route to add a new transaction document and return the transaction ID
+app.post('/Transactions/:id', async (req, res) => {
+  const transactionId = req.params.id; // The custom transaction ID provided in the URL
+  const data = req.body; // Transaction data
+
+  try {
+    // Add a new document to the Transactions collection with the given custom ID
+    const docRef = await db.collection('Transactions').doc(transactionId).set(data);
+
+    // Respond with the provided document ID
+    res.status(201).json({ id: transactionId });
+  } catch (error) {
+    console.error('Error saving transaction:', error);
+    res.status(500).json({ error: 'Failed to save transaction.' });
+  }
+});
+
+
+
+
+
 
 // Endpoint to process search terms and filter properties
 app.post("/Search", async (req, res) => {
